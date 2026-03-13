@@ -1,0 +1,63 @@
+{
+  "name": "openclaw-web-adapter",
+  "version": "0.1.0",
+  "private": false,
+  "description": "A reusable Web Adapter for OpenClaw that combines browser control, structured page understanding, MCP-friendly tool interfaces, and watch workflows to help agents read, act on, and monitor websites reliably.",
+  "homepage": "https://github.com/bithcq/openclaw-web-adapter#readme",
+  "bugs": {
+    "url": "https://github.com/bithcq/openclaw-web-adapter/issues"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bithcq/openclaw-web-adapter.git"
+  },
+  "files": [
+    "plugin/",
+    "src/",
+    "API.md",
+    "INSTALL.md",
+    "LICENSE",
+    "OPENCLAW_INTEGRATION.md",
+    "README.md",
+    "ROADMAP.md",
+    "SPEC.md",
+    "openclaw.plugin.json"
+  ],
+  "type": "module",
+  "scripts": {
+    "dev:1688-chat": "tsx src/adapters/1688.com/chat/runner.ts",
+    "format:check": "oxfmt --check .",
+    "format:fix": "oxfmt --write .",
+    "test": "vitest run --config vitest.config.ts",
+    "test:watch": "vitest --config vitest.config.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "jiti": "^2.6.1",
+    "playwright-core": "1.58.2"
+  },
+  "devDependencies": {
+    "@types/node": "^25.3.5",
+    "oxfmt": "0.36.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.18"
+  },
+  "peerDependencies": {
+    "openclaw": ">=2026.3.2"
+  },
+  "peerDependenciesMeta": {
+    "openclaw": {
+      "optional": true
+    }
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "openclaw": {
+    "extensions": [
+      "./plugin/index.ts"
+    ]
+  }
+}

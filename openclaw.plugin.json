@@ -1,0 +1,108 @@
+{
+  "id": "web-adapter",
+  "name": "Web Adapter",
+  "description": "Automatic page adaptation layer for browser-backed OpenClaw workflows.",
+  "uiHints": {
+    "enabled": {
+      "label": "Enabled"
+    },
+    "installMode": {
+      "label": "Install Mode",
+      "help": "Use companion for current sidecar flows and native for future tighter OpenClaw integration."
+    },
+    "browserRelayBaseUrl": {
+      "label": "Browser Relay Base URL",
+      "advanced": true,
+      "placeholder": "http://127.0.0.1:18792"
+    },
+    "gatewayBaseUrl": {
+      "label": "Gateway Base URL",
+      "advanced": true,
+      "placeholder": "http://127.0.0.1:18789"
+    },
+    "autoMatch": {
+      "label": "Auto Match Supported Pages"
+    },
+    "watchers": {
+      "label": "Native Watchers",
+      "help": "Configure browser-backed watcher processes that OpenClaw should supervise. Currently only 1688.com/chat is supported in native watcher mode.",
+      "advanced": true
+    }
+  },
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "enabled": {
+        "type": "boolean"
+      },
+      "installMode": {
+        "type": "string",
+        "enum": ["companion", "native"]
+      },
+      "browserRelayBaseUrl": {
+        "type": "string"
+      },
+      "gatewayBaseUrl": {
+        "type": "string"
+      },
+      "autoMatch": {
+        "type": "boolean"
+      },
+      "watchers": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["adapterId"],
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "adapterId": {
+              "type": "string",
+              "enum": ["1688.com/chat"]
+            },
+            "enabled": {
+              "type": "boolean"
+            },
+            "pluginEventsPath": {
+              "type": "string"
+            },
+            "pluginEventsUrl": {
+              "type": "string"
+            },
+            "pluginAuthToken": {
+              "type": "string"
+            },
+            "cdpUrl": {
+              "type": "string"
+            },
+            "listenPort": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "pollMs": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "selectorsPath": {
+              "type": "string"
+            },
+            "downloadDir": {
+              "type": "string"
+            },
+            "sendConfirmTimeoutMs": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "outboundRetryAttempts": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        }
+      }
+    }
+  }
+}
