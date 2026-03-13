@@ -2,7 +2,7 @@
 
 # ROADMAP
 
-`openclaw-web-adapter` 当前的开发路线图。
+`web-adapter` 当前的开发路线图。
 
 ## 原则
 

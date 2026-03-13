@@ -2,7 +2,7 @@
 
 # INSTALL
 
-Installation and usage guide for `openclaw-web-adapter`.
+Installation and usage guide for `web-adapter`.
 
 ## 1. Positioning
 
@@ -28,6 +28,7 @@ Current truth:
 - for the root helper scripts:
   - `install.sh` / `update.sh` require `git`
   - the scripts first try `openclaw daemon restart` and only fall back to `systemctl --user restart openclaw-gateway.service`
+  - the scripts clone/update `https://github.com/bithcq/openclaw-web-adapter.git` by default
 
 ## 3. Current Development Installation
 
@@ -44,14 +45,14 @@ bash uninstall.sh
 Behavior:
 
 - `install.sh`
-  - default target is the current repository checkout
-  - if you pass a non-existent path, clone the current repository `origin` into that path first
+  - default target is `~/web-adapter`
+  - clone the GitHub repository into that path when the checkout does not exist yet
   - run `pnpm install`
   - install the plugin into OpenClaw with `openclaw plugins install -l`
   - enable the plugin
   - restart the gateway
 - `update.sh`
-  - default target is the current repository checkout
+  - default target is `~/web-adapter`
   - update using the checkout's configured upstream branch, or fall back to the current branch plus its first remote
   - rerun dependency install
   - refresh the linked plugin install from that same checkout
@@ -64,29 +65,36 @@ Behavior:
 Examples:
 
 ```bash
-# install the current checkout
+# clone from GitHub into ~/web-adapter, then install
 bash install.sh
 
-# bootstrap a separate checkout, then install it
-bash install.sh ~/openclaw-web-adapter
+# clone from GitHub into a custom path, then install it
+bash install.sh ~/web-adapter
 
 # update a specific checkout
-bash update.sh ~/openclaw-web-adapter
+bash update.sh ~/web-adapter
 ```
+
+Environment overrides:
+
+- `OPENCLAW_WEB_ADAPTER_TARGET_DIR`
+  - override the default checkout directory
+- `OPENCLAW_WEB_ADAPTER_REPO_URL`
+  - override the default GitHub repository URL when you need a fork or mirror
 
 ### 3.1 Install into OpenClaw
 
-For local development, install the repository into OpenClaw with either of
-these:
+For local development against your current working tree, install the repository
+into OpenClaw with either of these:
 
 ```bash
-openclaw plugins install -l /path/to/openclaw-web-adapter
+openclaw plugins install -l /path/to/web-adapter
 ```
 
 or
 
 ```bash
-openclaw plugins install /path/to/openclaw-web-adapter
+openclaw plugins install /path/to/web-adapter
 ```
 
 Then restart the OpenClaw gateway.
@@ -130,8 +138,8 @@ Restart the gateway after editing config.
 ### 3.3 Clone and install
 
 ```bash
-git clone https://github.com/bithcq/openclaw-web-adapter.git
-cd openclaw-web-adapter
+git clone https://github.com/bithcq/openclaw-web-adapter.git web-adapter
+cd web-adapter
 pnpm install
 ```
 
@@ -245,7 +253,7 @@ This is now implemented for explicitly configured supported watchers.
 
 The target user experience is:
 
-- install `openclaw-web-adapter` as an OpenClaw-compatible package
+- install `web-adapter` as an OpenClaw-compatible package
 - let it register its adapters into the OpenClaw environment
 - let the plugin supervise configured watcher processes
 - expose page capabilities without per-site manual wiring for supported adapters

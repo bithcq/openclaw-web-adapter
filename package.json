@@ -1,5 +1,5 @@
 {
-  "name": "openclaw-web-adapter",
+  "name": "web-adapter",
   "version": "0.1.0",
   "private": false,
   "description": "A reusable Web Adapter for OpenClaw that combines browser control, structured page understanding, MCP-friendly tool interfaces, and watch workflows to help agents read, act on, and monitor websites reliably.",

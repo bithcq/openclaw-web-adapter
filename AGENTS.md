@@ -1,6 +1,6 @@
 # AGENTS.md
 
-# openclaw-web-adapter
+# web-adapter
 
 - 本仓库是 OpenClaw 外部生态项目，不是 OpenClaw 核心仓库。
 - 所有说明、README、提交信息都必须严格区分：已实现 / 计划中 / 未完成。禁止把计划写成已支持。

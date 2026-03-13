@@ -2,7 +2,7 @@
 
 # SPEC
 
-Repository-level specification for `openclaw-web-adapter`.
+Repository-level specification for `web-adapter`.
 
 ## 1. Scope
 

@@ -2,7 +2,7 @@
 
 # ROADMAP
 
-Current development roadmap for `openclaw-web-adapter`.
+Current development roadmap for `web-adapter`.
 
 ## Principles
 

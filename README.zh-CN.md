@@ -100,8 +100,9 @@ bash update.sh
 bash uninstall.sh
 ```
 
-这些脚本默认作用于当前仓库 checkout。传入路径时，`install.sh`
-会先在目标路径自举 clone，`update.sh` 则会针对那个 checkout 执行更新。
+这些脚本默认会把 `https://github.com/bithcq/openclaw-web-adapter.git`
+clone / 更新到 `~/web-adapter`，再把那个 checkout 安装进
+OpenClaw。传入路径时，脚本会改为作用于指定 checkout 路径。
 
 ### 当前开发接入方式
 
@@ -118,6 +119,10 @@ bash uninstall.sh
 3. 在 Chrome 中打开目标网站
 4. 让插件托管已配置 watcher，或在需要时从本仓库手动运行 watcher 入口
 5. 让 Web Adapter 自动附着页面并匹配 adapter
+
+如果你要直接安装当前工作区代码做本地开发验证，优先直接使用
+`openclaw plugins install -l /path/to/web-adapter`，不要走这个
+GitHub 自举脚本。
 
 ### 目标安装形态
 

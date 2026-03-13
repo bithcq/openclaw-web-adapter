@@ -2,7 +2,7 @@
 
 # INSTALL
 
-`openclaw-web-adapter` 的安装与使用说明。
+`web-adapter` 的安装与使用说明。
 
 ## 1. 定位
 
@@ -28,6 +28,7 @@
 - 对于仓库根目录脚本：
   - `install.sh` / `update.sh` 需要 `git`
   - 脚本会优先尝试 `openclaw daemon restart`，只有失败时才回退到 `systemctl --user restart openclaw-gateway.service`
+  - 脚本默认会 clone / 更新 `https://github.com/bithcq/openclaw-web-adapter.git`
 
 ## 3. 当前开发安装方式
 
@@ -44,14 +45,14 @@ bash uninstall.sh
 行为说明：
 
 - `install.sh`
-  - 默认作用于当前仓库 checkout
-  - 如果传入一个不存在的路径，会先把当前仓库的 `origin` clone 到目标路径
+  - 默认目标目录是 `~/web-adapter`
+  - 如果目标 checkout 不存在，会先从 GitHub clone 到该目录
   - 运行 `pnpm install`
   - 使用 `openclaw plugins install -l` 安装到 OpenClaw
   - 启用插件
   - 重启 gateway
 - `update.sh`
-  - 默认作用于当前仓库 checkout
+  - 默认目标目录是 `~/web-adapter`
   - 优先按该 checkout 的 upstream 分支更新；如果没有 upstream，则回退到“当前分支 + 第一个 remote”
   - 重新安装依赖
   - 从同一个 checkout 刷新 linked plugin install
@@ -64,28 +65,35 @@ bash uninstall.sh
 示例：
 
 ```bash
-# 安装当前 checkout
+# 从 GitHub clone 到 ~/web-adapter 后安装
 bash install.sh
 
-# 先自举一个独立 checkout，再安装它
-bash install.sh ~/openclaw-web-adapter
+# 从 GitHub clone 到自定义路径后安装
+bash install.sh ~/web-adapter
 
 # 更新指定 checkout
-bash update.sh ~/openclaw-web-adapter
+bash update.sh ~/web-adapter
 ```
+
+环境变量覆盖：
+
+- `OPENCLAW_WEB_ADAPTER_TARGET_DIR`
+  - 覆盖默认 checkout 目录
+- `OPENCLAW_WEB_ADAPTER_REPO_URL`
+  - 需要 fork 或镜像时，可覆盖默认 GitHub 仓库 URL
 
 ### 3.1 安装到 OpenClaw
 
-本地开发时，可以用下面任一方式把仓库装进 OpenClaw：
+如果你要直接安装当前工作区代码做本地开发验证，可以用下面任一方式把仓库装进 OpenClaw：
 
 ```bash
-openclaw plugins install -l /path/to/openclaw-web-adapter
+openclaw plugins install -l /path/to/web-adapter
 ```
 
 或者：
 
 ```bash
-openclaw plugins install /path/to/openclaw-web-adapter
+openclaw plugins install /path/to/web-adapter
 ```
 
 之后重启 OpenClaw gateway。
@@ -129,8 +137,8 @@ openclaw web-adapter watchers --json
 ### 3.3 克隆并安装依赖
 
 ```bash
-git clone https://github.com/bithcq/openclaw-web-adapter.git
-cd openclaw-web-adapter
+git clone https://github.com/bithcq/openclaw-web-adapter.git web-adapter
+cd web-adapter
 pnpm install
 ```
 
@@ -238,7 +246,7 @@ curl http://127.0.0.1:18888/health
 
 目标用户体验是：
 
-- 把 `openclaw-web-adapter` 安装为 OpenClaw 兼容插件
+- 把 `web-adapter` 安装为 OpenClaw 兼容插件
 - 让它把 adapter 注册到 OpenClaw 环境中
 - 让插件托管已配置 watcher 进程
 - 对已支持 adapter 暴露无需逐站点手工接线的页面能力

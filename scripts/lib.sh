@@ -3,24 +3,41 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-DEFAULT_TARGET_DIR="${OPENCLAW_WEB_ADAPTER_TARGET_DIR:-$REPO_ROOT}"
+DEFAULT_REPO_URL="${OPENCLAW_WEB_ADAPTER_REPO_URL:-https://github.com/bithcq/openclaw-web-adapter.git}"
+DEFAULT_TARGET_DIR="${OPENCLAW_WEB_ADAPTER_TARGET_DIR:-$HOME/web-adapter}"
 DEFAULT_PLUGIN_ID="web-adapter"
 
 info() {
-  printf '[openclaw-web-adapter] %s\n' "$*"
+  printf '[web-adapter] %s\n' "$*"
 }
 
 warn() {
-  printf '[openclaw-web-adapter] WARN: %s\n' "$*" >&2
+  printf '[web-adapter] WARN: %s\n' "$*" >&2
 }
 
 die() {
-  printf '[openclaw-web-adapter] ERROR: %s\n' "$*" >&2
+  printf '[web-adapter] ERROR: %s\n' "$*" >&2
   exit 1
 }
 
 require_cmd() {
   command -v "$1" >/dev/null 2>&1 || die "缺少命令：$1"
+}
+
+config_file_path() {
+  local explicit_config="${OPENCLAW_CONFIG_PATH:-${CLAWDBOT_CONFIG_PATH:-}}"
+  if [[ -n "$explicit_config" ]]; then
+    printf '%s\n' "$explicit_config"
+    return
+  fi
+
+  local explicit_state_dir="${OPENCLAW_STATE_DIR:-${CLAWDBOT_STATE_DIR:-}}"
+  if [[ -n "$explicit_state_dir" ]]; then
+    printf '%s\n' "$explicit_state_dir/openclaw.json"
+    return
+  fi
+
+  printf '%s\n' "$HOME/.openclaw/openclaw.json"
 }
 
 resolve_repo_dir() {
@@ -50,36 +67,58 @@ ensure_uninstall_tools() {
   require_cmd openclaw
 }
 
-current_repo_url() {
-  git -C "$REPO_ROOT" remote get-url origin 2>/dev/null || true
+source_repo_url() {
+  printf '%s\n' "$DEFAULT_REPO_URL"
+}
+
+normalize_repo_url() {
+  local raw="${1:-}"
+  raw="${raw%.git}"
+  raw="${raw%/}"
+  raw="${raw#ssh://}"
+
+  if [[ "$raw" == git@*:* ]]; then
+    local host_and_path="${raw#git@}"
+    printf '%s\n' "${host_and_path/:/\/}"
+    return
+  fi
+
+  if [[ "$raw" == git@*/* ]]; then
+    printf '%s\n' "${raw#git@}"
+    return
+  fi
+
+  raw="${raw#https://}"
+  raw="${raw#http://}"
+  raw="${raw#git://}"
+  printf '%s\n' "${raw#/}"
 }
 
 ensure_repo_checkout() {
   local repo_dir="$1"
+  local source_url normalized_source_url
+  source_url="$(source_repo_url)"
+  normalized_source_url="$(normalize_repo_url "$source_url")"
+
   if [[ -d "$repo_dir/.git" ]]; then
-    local source_url existing_url
-    source_url="$(current_repo_url)"
+    local existing_url normalized_existing_url
     existing_url="$(git -C "$repo_dir" remote get-url origin 2>/dev/null || true)"
-    if [[ -n "$source_url" && -n "$existing_url" && "$existing_url" != "$source_url" ]]; then
-      die "目标目录的 origin 与当前仓库不一致：$repo_dir"
+    normalized_existing_url="$(normalize_repo_url "$existing_url")"
+    if [[ -z "$normalized_existing_url" ]]; then
+      die "目标目录存在 git 仓库，但没有可用的 origin：$repo_dir"
+    fi
+    if [[ "$normalized_existing_url" != "$normalized_source_url" ]]; then
+      die "目标目录的 origin 与配置的安装源不一致：$repo_dir"
     fi
     return
   fi
 
-  local source_url
-  source_url="$(current_repo_url)"
-  [[ -n "$source_url" ]] || die "当前仓库没有 origin，无法自动克隆到新目录：$repo_dir"
   if [[ -e "$repo_dir" ]]; then
     die "目标路径已存在但不是 git 仓库：$repo_dir"
   fi
 
-  if [[ "$repo_dir" != "$REPO_ROOT" ]]; then
-    info "克隆仓库到 $repo_dir"
-    git clone "$source_url" "$repo_dir"
-    return
-  fi
-
-  die "当前仓库目录不是 git 仓库：$repo_dir"
+  info "从 GitHub 克隆仓库到 $repo_dir"
+  git clone "$source_url" "$repo_dir"
 }
 
 resolve_upstream_ref() {
@@ -172,11 +211,96 @@ plugin_exists() {
   printf '%s\n' "$list_json" | grep -Eq "\"id\"[[:space:]]*:[[:space:]]*\"${DEFAULT_PLUGIN_ID}\""
 }
 
+plugin_loaded() {
+  local list_json
+  list_json="$(openclaw plugins list --json)"
+  printf '%s\n' "$list_json" | node --input-type=module -e '
+    let raw = "";
+    for await (const chunk of process.stdin) {
+      raw += chunk;
+    }
+    const payload = JSON.parse(raw);
+    const plugin = Array.isArray(payload.plugins)
+      ? payload.plugins.find((entry) => entry?.id === process.argv[1])
+      : null;
+    if (!plugin) {
+      process.exit(1);
+    }
+    process.exit(plugin.status === "loaded" ? 0 : 2);
+  ' "$DEFAULT_PLUGIN_ID"
+}
+
+wait_for_plugin_loaded() {
+  local attempts="${1:-15}"
+  local delay_seconds="${2:-1}"
+  local attempt
+  for ((attempt = 1; attempt <= attempts; attempt += 1)); do
+    if plugin_loaded; then
+      return 0
+    fi
+    sleep "$delay_seconds"
+  done
+  return 1
+}
+
+fetch_plugin_status_via_gateway() {
+  local gateway_base="${OPENCLAW_GATEWAY_BASE_URL:-http://127.0.0.1:18789}"
+  local config_path
+  config_path="$(config_file_path)"
+
+  GATEWAY_BASE="$gateway_base" OPENCLAW_CONFIG_FILE="$config_path" node --input-type=module -e '
+    import fs from "node:fs";
+
+    const configPath = process.env.OPENCLAW_CONFIG_FILE;
+    const gatewayBase = process.env.GATEWAY_BASE || "http://127.0.0.1:18789";
+    const envToken =
+      process.env.OPENCLAW_GATEWAY_TOKEN?.trim() ||
+      process.env.CLAWDBOT_GATEWAY_TOKEN?.trim() ||
+      "";
+    let configToken = "";
+    if (!envToken && configPath) {
+      try {
+        const raw = fs.readFileSync(configPath, "utf8");
+        const parsed = JSON.parse(raw);
+        configToken = typeof parsed?.gateway?.auth?.token === "string" ? parsed.gateway.auth.token : "";
+      } catch {
+        configToken = "";
+      }
+    }
+    const token = envToken || configToken.trim();
+    if (!token) {
+      process.stderr.write("[web-adapter] WARN: 无法解析 gateway token，跳过 HTTP route 状态检查\n");
+      process.exit(2);
+    }
+    const response = await fetch(`${gatewayBase.replace(/\/$/, "")}/plugins/web-adapter/status`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (!response.ok) {
+      process.stderr.write(`[web-adapter] WARN: 插件状态路由返回 ${response.status}\n`);
+      process.exit(3);
+    }
+    process.stdout.write(await response.text());
+  '
+}
+
 show_plugin_status() {
   info "当前插件状态"
   openclaw plugins list
-  plugin_exists || die "OpenClaw 未发现插件：${DEFAULT_PLUGIN_ID}"
-  openclaw web-adapter status --json
+  wait_for_plugin_loaded 20 1 || die "OpenClaw 未发现已加载插件：${DEFAULT_PLUGIN_ID}"
+
+  if openclaw web-adapter status --json; then
+    return
+  fi
+
+  warn "插件 CLI 子命令当前不可用，回退到 Gateway HTTP route 状态检查"
+  if fetch_plugin_status_via_gateway; then
+    printf '\n'
+    return
+  fi
+
+  warn "插件已加载，但无法通过 CLI 或 HTTP route 获取状态"
 }
 
 show_uninstall_status() {

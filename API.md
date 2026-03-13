@@ -2,7 +2,7 @@
 
 # API
 
-Public contract layer for `openclaw-web-adapter`.
+Public contract layer for `web-adapter`.
 
 ## Core exports
 

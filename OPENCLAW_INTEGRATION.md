@@ -2,7 +2,7 @@
 
 # OPENCLAW INTEGRATION
 
-How `openclaw-web-adapter` is intended to fit into OpenClaw.
+How `web-adapter` is intended to fit into OpenClaw.
 
 ## 1. Objective
 
@@ -63,12 +63,12 @@ The target shape is OpenClaw-native, not just companion-style.
 
 Current implemented baseline:
 
-- `openclaw plugins install /path/to/openclaw-web-adapter`
-- `openclaw plugins install -l /path/to/openclaw-web-adapter`
+- `openclaw plugins install /path/to/web-adapter`
+- `openclaw plugins install -l /path/to/web-adapter`
 
 Current user experience:
 
-- install `openclaw-web-adapter` as an OpenClaw-compatible package
+- install `web-adapter` as an OpenClaw-compatible package
 - let OpenClaw discover or load it from an expected extension/plugin location
 - expose plugin routes, plugin CLI, and watcher status
 - optionally let the plugin supervise configured watcher processes

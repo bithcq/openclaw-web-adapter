@@ -110,9 +110,10 @@ bash update.sh
 bash uninstall.sh
 ```
 
-These scripts default to the current repository checkout. If you pass a path,
-`install.sh` can bootstrap a separate clone there first, and `update.sh` will
-operate on that specific checkout.
+These scripts default to cloning/updating
+`https://github.com/bithcq/openclaw-web-adapter.git` into
+`~/web-adapter`, then installing that checkout into OpenClaw. If you
+pass a path, the scripts operate on that specific checkout path instead.
 
 ### Current development setup
 
@@ -130,6 +131,10 @@ Current shape:
 4. either let the plugin supervise a configured watcher or run a manual watcher
    entry from this repository
 5. let Web Adapter attach to the page and match the adapter automatically
+
+For local development against your current working tree, prefer
+`openclaw plugins install -l /path/to/web-adapter` directly instead of
+the GitHub bootstrap script.
 
 ### Target packaged setup
 

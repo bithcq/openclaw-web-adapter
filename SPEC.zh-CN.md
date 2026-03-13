@@ -2,7 +2,7 @@
 
 # SPEC
 
-`openclaw-web-adapter` 的仓库级规范。
+`web-adapter` 的仓库级规范。
 
 ## 1. 范围
 

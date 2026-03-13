@@ -2,7 +2,7 @@
 
 # API
 
-`openclaw-web-adapter` 的公开契约层说明。
+`web-adapter` 的公开契约层说明。
 
 ## 核心导出
 

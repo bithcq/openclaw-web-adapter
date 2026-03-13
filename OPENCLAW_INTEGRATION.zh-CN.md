@@ -2,7 +2,7 @@
 
 # OPENCLAW INTEGRATION
 
-`openclaw-web-adapter` 预期如何融入 OpenClaw。
+`web-adapter` 预期如何融入 OpenClaw。
 
 ## 1. 目标
 
@@ -57,12 +57,12 @@ Web Adapter 不应重复实现这一层。
 
 当前已实现的基线：
 
-- `openclaw plugins install /path/to/openclaw-web-adapter`
-- `openclaw plugins install -l /path/to/openclaw-web-adapter`
+- `openclaw plugins install /path/to/web-adapter`
+- `openclaw plugins install -l /path/to/web-adapter`
 
 当前用户体验：
 
-- 将 `openclaw-web-adapter` 安装为 OpenClaw 兼容包
+- 将 `web-adapter` 安装为 OpenClaw 兼容包
 - 让 OpenClaw 从预期的 extension/plugin 位置发现或加载它
 - 暴露插件 routes、插件 CLI 和 watcher 状态
 - 在需要时让插件托管已配置的 watcher 进程
