@@ -1,3 +1,5 @@
+[English](./INSTALL.md) | [简体中文](./INSTALL.zh-CN.md)
+
 # INSTALL
 
 Installation and usage guide for `openclaw-web-adapter`.

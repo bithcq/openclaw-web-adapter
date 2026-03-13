@@ -213,9 +213,15 @@ const snapshot = await scanWithBestAdapter(registry, targetContext);
 ├── README.md
 ├── README.zh-CN.md
 ├── INSTALL.md
+├── INSTALL.zh-CN.md
 ├── API.md
+├── API.zh-CN.md
 ├── SPEC.md
+├── SPEC.zh-CN.md
 ├── ROADMAP.md
+├── ROADMAP.zh-CN.md
+├── OPENCLAW_INTEGRATION.md
+├── OPENCLAW_INTEGRATION.zh-CN.md
 ├── package.json
 ├── plugin/
 ├── scripts/
@@ -280,6 +286,8 @@ pnpm format:check
 - `API.md`：公开导出与用法示例
 - `SPEC.md`：仓库级契约与设计规则
 - `ROADMAP.md`：当前里程碑与后续 adapter 计划
+
+每份主要文档也都提供了对应的 `*.zh-CN.md` 中文版本。
 
 ## 非目标
 

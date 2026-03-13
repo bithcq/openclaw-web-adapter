@@ -227,9 +227,15 @@ This is the beginning of the MCP-friendly tool surface:
 ├── README.md
 ├── README.zh-CN.md
 ├── INSTALL.md
+├── INSTALL.zh-CN.md
 ├── API.md
+├── API.zh-CN.md
 ├── SPEC.md
+├── SPEC.zh-CN.md
 ├── ROADMAP.md
+├── ROADMAP.zh-CN.md
+├── OPENCLAW_INTEGRATION.md
+├── OPENCLAW_INTEGRATION.zh-CN.md
 ├── package.json
 ├── plugin/
 ├── scripts/
@@ -294,6 +300,8 @@ This table is intentionally growing. More adapters will be added over time.
 - `API.md`: public exports and usage examples
 - `SPEC.md`: repository-level contracts and design rules
 - `ROADMAP.md`: current milestones and next adapters
+
+Each major document also has a matching `*.zh-CN.md` Chinese version.
 
 ## Non-Goals
 

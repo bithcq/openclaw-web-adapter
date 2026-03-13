@@ -1,3 +1,5 @@
+[English](./OPENCLAW_INTEGRATION.md) | [简体中文](./OPENCLAW_INTEGRATION.zh-CN.md)
+
 # OPENCLAW INTEGRATION
 
 How `openclaw-web-adapter` is intended to fit into OpenClaw.

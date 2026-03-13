@@ -1,3 +1,5 @@
+[English](./SPEC.md) | [简体中文](./SPEC.zh-CN.md)
+
 # SPEC
 
 Repository-level specification for `openclaw-web-adapter`.
